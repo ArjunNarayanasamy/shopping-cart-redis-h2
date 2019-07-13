@@ -8,38 +8,38 @@ import org.springframework.stereotype.Repository;
 import java.util.Map;
 
 @Repository
-public class RedisRepository {
+public class RedisRepo {
 
     public static final String KEY = "ITEM";
     private RedisTemplate<String, SendToMQRequest> redisTemplate;
     private HashOperations hashOperations;
 
-    public RedisRepository(RedisTemplate<String, SendToMQRequest> redisTemplate) {
+    public RedisRepo(RedisTemplate<String, SendToMQRequest> redisTemplate) {
         this.redisTemplate = redisTemplate;
         hashOperations = redisTemplate.opsForHash();
     }
 
-    /*Getting all Items from tSable*/
+    /* Getting all Items from redis */
     public Map<String,SendToMQRequest> getAllItems(){
         return hashOperations.entries(KEY);
     }
 
-    /*Getting a specific item by item id from table*/
+    /* Getting a specific order from redis */
     public SendToMQRequest getItem(int itemId){
         return (SendToMQRequest) hashOperations.get(KEY,itemId);
     }
 
-    /*Adding an item into redis database*/
+    /* Adding an item into redis cache */
     public void addItem(SendToMQRequest item){
         hashOperations.put(KEY,item.getProductId()+"_"+item.getUserId(),item);
     }
 
-    /*delete an item from database*/
+    /* delete an item from redis */
     public void deleteItem(int id){
         hashOperations.delete(KEY,id);
     }
 
-    /*update an item from database*/
+    /* update an item in redis */
     public void updateItem(SendToMQRequest item){
         addItem(item);
     }

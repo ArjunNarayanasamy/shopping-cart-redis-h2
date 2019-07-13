@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-    public static final String topicExchangeName = "spring-boot-exchange";
-    static final String queueName = "spring-boot";
+    public static final String topicExchangeName = "dbs-cart-exchange";
+    static final String queueName = "dbs-cart";
 
     @Bean
     Queue queue() {
@@ -25,7 +25,7 @@ public class RabbitConfig {
 
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
+        return BindingBuilder.bind(queue).to(exchange).with("dbs.cart.#");
     }
 
     @Bean

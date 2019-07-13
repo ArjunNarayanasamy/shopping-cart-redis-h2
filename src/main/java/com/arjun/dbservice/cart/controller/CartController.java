@@ -2,7 +2,7 @@ package com.arjun.dbservice.cart.controller;
 
 import com.arjun.dbservice.cart.controller.model.SendToMQRequest;
 import com.arjun.dbservice.cart.config.RabbitConfig;
-import com.arjun.dbservice.cart.dao.RedisRepository;
+import com.arjun.dbservice.cart.dao.RedisRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,16 +24,18 @@ public class CartController {
     private ObjectMapper mapper;
 
     @Autowired
-    RedisRepository redisRepo;
+    RedisRepo redisRepo;
 
+    /* sends message to MQ */
     @PostMapping("/data")
     ResponseEntity sendDataToMQ(@RequestBody SendToMQRequest request) throws JsonProcessingException {
        String dataToSend = mapper.writeValueAsString(request);
-       rabbitTemplate.convertAndSend(RabbitConfig.topicExchangeName, "foo.bar.baz", dataToSend);
+       rabbitTemplate.convertAndSend(RabbitConfig.topicExchangeName, "dbs.cart.baz", dataToSend);
        return generateResponse("Data send to MQ successfully", HttpStatus.OK);
     }
 
-    @RequestMapping("/getAllItems")
+    /* To get all the order items in the redis cache */
+    @RequestMapping("/cache/getAllItems")
     @ResponseBody
     public ResponseEntity<Map<String, SendToMQRequest>> getAllItems(){
         Map<String,SendToMQRequest> items =  redisRepo.getAllItems();
