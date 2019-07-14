@@ -2,6 +2,7 @@ package com.arjun.dbservice.cart.controller;
 
 import com.arjun.dbservice.cart.controller.model.SendToMQRequest;
 import com.arjun.dbservice.cart.config.RabbitConfig;
+import com.arjun.dbservice.cart.dao.OrderRepo;
 import com.arjun.dbservice.cart.dao.RedisRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,9 @@ public class CartController {
 
     @Autowired
     RedisRepo redisRepo;
+
+    @Autowired
+    OrderRepo repo;
 
     /* sends message to MQ */
     @PostMapping("/data")
@@ -65,6 +69,14 @@ public class CartController {
         Map<String, String> response = new HashMap<>();
         response.put("Status", "Deleted");
         return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity checkDB() {
+        Integer result = repo.checkDbStatus();
+        Map<String, String> response = new HashMap<>();
+        response.put("Status", "Success = " + result);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     private ResponseEntity generateResponse(String message, HttpStatus status) {

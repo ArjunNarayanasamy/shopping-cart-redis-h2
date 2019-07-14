@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class Receiver {
+public class RabbitReceiver {
 
     @Autowired
     CartService cartService;
@@ -19,7 +19,7 @@ public class Receiver {
     @Autowired
     ObjectMapper mapper;
 
-    Logger logger = LoggerFactory.getLogger(Receiver.class);
+    Logger logger = LoggerFactory.getLogger(RabbitReceiver.class);
 
     /**
      * Method which receives the messages from RabbitMQ

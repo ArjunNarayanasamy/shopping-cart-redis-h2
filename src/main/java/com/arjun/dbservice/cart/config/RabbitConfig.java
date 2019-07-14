@@ -1,6 +1,6 @@
 package com.arjun.dbservice.cart.config;
 
-import com.arjun.dbservice.cart.service.mq.Receiver;
+import com.arjun.dbservice.cart.service.mq.RabbitReceiver;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -39,7 +39,7 @@ public class RabbitConfig {
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(Receiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
+    MessageListenerAdapter listenerAdapter(RabbitReceiver rabbitReceiver) {
+        return new MessageListenerAdapter(rabbitReceiver, "receiveMessage");
     }
 }

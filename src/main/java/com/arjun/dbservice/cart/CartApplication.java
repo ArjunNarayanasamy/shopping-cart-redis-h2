@@ -1,8 +1,6 @@
 package com.arjun.dbservice.cart;
 
 import com.arjun.dbservice.cart.controller.model.SendToMQRequest;
-import com.arjun.dbservice.cart.service.AutoHealService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -10,8 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.annotation.PostConstruct;
-import java.time.Duration;
 import java.util.concurrent.*;
 
 /**
@@ -20,9 +16,6 @@ import java.util.concurrent.*;
 @SpringBootApplication
 @EnableCaching
 public class CartApplication {
-
-	@Autowired
-	AutoHealService autoHealService;
 
 	ScheduledExecutorService scheduler
 			= Executors.newSingleThreadScheduledExecutor();
@@ -42,13 +35,6 @@ public class CartApplication {
 		RedisTemplate<String,SendToMQRequest> redisTemplate = new RedisTemplate<String, SendToMQRequest>();
 		redisTemplate.setConnectionFactory(jedisConnectionFactory());
 		return redisTemplate;
-	}
-
-	/* Calling self-healing service at scheduled interval
-	* to keep an eye on DB connection and Cache entries */
-	@PostConstruct
-	public void startDBCheck() {
-		scheduler.scheduleWithFixedDelay(autoHealService, 5, 5, TimeUnit.SECONDS);
 	}
 
 }

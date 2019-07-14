@@ -45,18 +45,27 @@ public class CartService {
      */
     public void processMQMessage(SendToMQRequest mqRequest) {
 
-        Order order = null;
         try {
-            User user = userRepo.getOne(mqRequest.getUserId());
-            Product product = productRepo.getOne(mqRequest.getProductId());
-            order = new Order(product.getProductId(), user.getUserId(), mqRequest.getQuantity());
-            order = orderRepo.save(order);
-            logger.info("Order Saved: " + order.getOrderId());
+            if(CircuitBreaker.circuitOpen.get()) {
+                this.addToRedis(mqRequest);
+            } else {
+                logger.info("Circuit is closed. Saving order to DB");
+                User user = userRepo.getOne(mqRequest.getUserId());
+                Product product = productRepo.getOne(mqRequest.getProductId());
+                Order order = new Order(product.getProductId(), user.getUserId(), mqRequest.getQuantity());
+                order = orderRepo.save(order);
+                logger.info("Order Saved: " + order.getOrderId());
+            }
         } catch (Exception e) {
-            logger.error("Couldn't save order: {} , Saving the order to cache.");
-            redisRepo.addItem(mqRequest);
+            logger.error("Connection failed to DB, Updating CircuitBreaker status to OPEN.");
+            this.addToRedis(mqRequest);
+            CircuitBreaker.circuitOpen.set(true);
         }
+    }
 
+    public void addToRedis(SendToMQRequest request) {
+        logger.error("Circuit is open, Saving the order to Redis cache.");
+        redisRepo.addItem(request);
     }
 
     public boolean checkDB() {
