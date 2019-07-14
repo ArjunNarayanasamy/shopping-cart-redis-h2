@@ -52,6 +52,7 @@ public class CircuitBreaker {
 
     void writeFromRedisToDB() {
         logger.info("Checking Cache for pending orders to write in DB");
+
         if (redisRepo.getRecordCount() > 0) {
             logger.info("Taking orders from Cache and Inserting into DB");
             Map<String, SendToMQRequest> ordersFromCache = redisRepo.getAllItems();

@@ -39,6 +39,7 @@ public class CartController {
        return generateResponse("Data send to MQ successfully", HttpStatus.OK);
     }
 
+    // Other end points below are for testing
     /* To get all the order items in the redis cache */
     @RequestMapping("/cache/getAllItems")
     @ResponseBody
@@ -69,14 +70,6 @@ public class CartController {
         Map<String, String> response = new HashMap<>();
         response.put("Status", "Deleted");
         return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("/check")
-    public ResponseEntity checkDB() {
-        Integer result = repo.checkDbStatus();
-        Map<String, String> response = new HashMap<>();
-        response.put("Status", "Success = " + result);
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     private ResponseEntity generateResponse(String message, HttpStatus status) {

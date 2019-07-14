@@ -14,7 +14,6 @@ import java.util.concurrent.*;
  * Entry point of Application
  */
 @SpringBootApplication
-@EnableCaching
 public class CartApplication {
 
 	ScheduledExecutorService scheduler

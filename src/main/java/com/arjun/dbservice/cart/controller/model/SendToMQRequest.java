@@ -11,6 +11,12 @@ public class SendToMQRequest implements Serializable {
 
     }
 
+    public SendToMQRequest(String productId, String userId, Integer quantity) {
+        this.productId = productId;
+        this.userId = userId;
+        this.quantity = quantity;
+    }
+
     public String getProductId() {
         return productId;
     }

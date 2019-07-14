@@ -47,7 +47,7 @@ public class CartService {
 
         try {
             if(CircuitBreaker.circuitOpen.get()) {
-                this.addToRedis(mqRequest);
+                addToRedis(mqRequest);
             } else {
                 logger.info("Circuit is closed. Saving order to DB");
                 User user = userRepo.getOne(mqRequest.getUserId());
@@ -58,27 +58,14 @@ public class CartService {
             }
         } catch (Exception e) {
             logger.error("Connection failed to DB, Updating CircuitBreaker status to OPEN.");
-            this.addToRedis(mqRequest);
+            addToRedis(mqRequest);
             CircuitBreaker.circuitOpen.set(true);
         }
     }
 
     public void addToRedis(SendToMQRequest request) {
-        logger.error("Circuit is open, Saving the order to Redis cache.");
+        logger.error("Circuit is OPEN, Saving the order to Redis cache.");
         redisRepo.addItem(request);
-    }
-
-    public boolean checkDB() {
-        boolean status = false;
-        try {
-            User user = userRepo.getOne("US001");
-            if(!user.equals(null)) {
-                status = true;
-            }
-        } catch (Exception e) {
-            status = false;
-        }
-        return status;
     }
 
 }
