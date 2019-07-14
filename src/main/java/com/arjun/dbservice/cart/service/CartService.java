@@ -11,6 +11,7 @@ import com.arjun.dbservice.cart.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,15 +22,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class CartService {
 
+    @Lazy
     @Autowired
     UserRepo userRepo;
 
+    @Lazy
     @Autowired
     OrderRepo orderRepo;
 
+    @Lazy
     @Autowired
     ProductRepo productRepo;
 
+    @Lazy
     @Autowired
     RedisRepo redisRepo;
 
@@ -40,18 +45,31 @@ public class CartService {
      */
     public void processMQMessage(SendToMQRequest mqRequest) {
 
-        User user = userRepo.getOne(mqRequest.getUserId());
-        Product product = productRepo.getOne(mqRequest.getProductId());
         Order order = null;
         try {
+            User user = userRepo.getOne(mqRequest.getUserId());
+            Product product = productRepo.getOne(mqRequest.getProductId());
             order = new Order(product.getProductId(), user.getUserId(), mqRequest.getQuantity());
             order = orderRepo.save(order);
             logger.info("Order Saved: " + order.getOrderId());
         } catch (Exception e) {
-            logger.error("Couldn't save order: {} , Saving the order to cache."+ order.getOrderId());
+            logger.error("Couldn't save order: {} , Saving the order to cache.");
             redisRepo.addItem(mqRequest);
         }
 
+    }
+
+    public boolean checkDB() {
+        boolean status = false;
+        try {
+            User user = userRepo.getOne("US001");
+            if(!user.equals(null)) {
+                status = true;
+            }
+        } catch (Exception e) {
+            status = false;
+        }
+        return status;
     }
 
 }

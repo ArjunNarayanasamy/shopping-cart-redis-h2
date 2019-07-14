@@ -38,8 +38,17 @@ public class CartController {
     @RequestMapping("/cache/getAllItems")
     @ResponseBody
     public ResponseEntity<Map<String, SendToMQRequest>> getAllItems(){
-        Map<String,SendToMQRequest> items =  redisRepo.getAllItems();
+        Map<String, SendToMQRequest> items =  redisRepo.getAllItems();
         return new ResponseEntity<Map<String, SendToMQRequest>>(items, HttpStatus.OK);
+    }
+
+    @RequestMapping("/cache/getNoOfItems")
+    @ResponseBody
+    public ResponseEntity getTotalRecordsInCache() {
+        Long total = redisRepo.getRecordCount();
+        Map<String, Long> response = new HashMap<>();
+        response.put("TotalRecords", total);
+        return new ResponseEntity<Map<String, Long>>(response, HttpStatus.OK);
     }
 
     private ResponseEntity generateResponse(String message, HttpStatus status) {

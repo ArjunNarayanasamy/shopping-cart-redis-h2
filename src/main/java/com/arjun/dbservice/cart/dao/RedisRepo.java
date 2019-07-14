@@ -19,6 +19,11 @@ public class RedisRepo {
         hashOperations = redisTemplate.opsForHash();
     }
 
+    /* */
+    public Long getRecordCount() {
+        return hashOperations.size(KEY);
+    }
+
     /* Getting all Items from redis */
     public Map<String,SendToMQRequest> getAllItems(){
         return hashOperations.entries(KEY);
