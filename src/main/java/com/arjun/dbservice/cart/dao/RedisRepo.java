@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
+import java.util.Set;
 
 @Repository
 public class RedisRepo {
@@ -24,6 +25,10 @@ public class RedisRepo {
         return hashOperations.size(KEY);
     }
 
+    public Set<String> getKeysFromRedis() {
+        return hashOperations.keys(KEY);
+    }
+
     /* Getting all Items from redis */
     public Map<String,SendToMQRequest> getAllItems(){
         return hashOperations.entries(KEY);
@@ -40,7 +45,7 @@ public class RedisRepo {
     }
 
     /* delete an item from redis */
-    public void deleteItem(int id){
+    public void deleteItem(String id){
         hashOperations.delete(KEY,id);
     }
 

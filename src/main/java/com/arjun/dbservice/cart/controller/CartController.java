@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class CartController {
@@ -49,6 +50,21 @@ public class CartController {
         Map<String, Long> response = new HashMap<>();
         response.put("TotalRecords", total);
         return new ResponseEntity<Map<String, Long>>(response, HttpStatus.OK);
+    }
+
+    @RequestMapping("/cache/getKeys")
+    @ResponseBody
+    public ResponseEntity getKeysFromRedis() {
+        Set<String> keys = redisRepo.getKeysFromRedis();
+        return new ResponseEntity<Set<String>>(keys, HttpStatus.OK);
+    }
+
+    @GetMapping("/cache/delete")
+    public ResponseEntity deleteKeys(@RequestParam(required = true) String key) {
+        redisRepo.deleteItem(key);
+        Map<String, String> response = new HashMap<>();
+        response.put("Status", "Deleted");
+        return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
     }
 
     private ResponseEntity generateResponse(String message, HttpStatus status) {
